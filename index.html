@@ -16,10 +16,12 @@
             background: #0a0a0a;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 20px;
             overflow: hidden;
+            gap: 40px;
         }
 
         .btn-container {
@@ -117,6 +119,36 @@
         .particle:nth-child(4) { left: 80%; animation-delay: 6s; }
         .particle:nth-child(5) { left: 30%; animation-delay: 1s; }
         .particle:nth-child(6) { left: 70%; animation-delay: 3s; }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #gameCanvas {
+            border: 2px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 8px 30px rgba(255, 255, 255, 0.1);
+        }
+
+        .score {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .game-over {
+            color: #ff6b6b;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .game-over.show {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -135,5 +167,135 @@
             Acessar Slide
         </a>
     </div>
-</body>
-</html>
+
+    <div class="game-container">
+        <div class="score">Pontos: <span id="score">0</span></div>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <div class="game-over" id="gameOver">Game Over! Pressione ESPAÇO para reiniciar</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const gameOverElement = document.getElementById('gameOver');
+
+        const gridSize = 20;
+        const tileCount = canvas.width / gridSize;
+
+        let snake = [{x: 10, y: 10}];
+        let velocity = {x: 0, y: 0};
+        let food = {x: 15, y: 15};
+        let score = 0;
+        let gameRunning = false;
+        let gameOver = false;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && gameOver) {
+                resetGame();
+                return;
+            }
+
+            if (!gameRunning && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+                gameRunning = true;
+            }
+
+            switch(e.code) {
+                case 'ArrowUp':
+                    if (velocity.y === 0) {
+                        velocity = {x: 0, y: -1};
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (velocity.y === 0) {
+                        velocity = {x: 0, y: 1};
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (velocity.x === 0) {
+                        velocity = {x: -1, y: 0};
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (velocity.x === 0) {
+                        velocity = {x: 1, y: 0};
+                    }
+                    break;
+            }
+        });
+
+        function resetGame() {
+            snake = [{x: 10, y: 10}];
+            velocity = {x: 0, y: 0};
+            food = {x: 15, y: 15};
+            score = 0;
+            gameRunning = false;
+            gameOver = false;
+            scoreElement.textContent = '0';
+            gameOverElement.classList.remove('show');
+        }
+
+        function generateFood() {
+            food = {
+                x: Math.floor(Math.random() * tileCount),
+                y: Math.floor(Math.random() * tileCount)
+            };
+
+            for (let segment of snake) {
+                if (segment.x === food.x && segment.y === food.y) {
+                    generateFood();
+                    return;
+                }
+            }
+        }
+
+        function gameLoop() {
+            if (gameOver) return;
+
+            if (gameRunning) {
+                const head = {
+                    x: snake[0].x + velocity.x,
+                    y: snake[0].y + velocity.y
+                };
+
+                if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+                    gameOver = true;
+                    gameOverElement.classList.add('show');
+                    return;
+                }
+
+                for (let segment of snake) {
+                    if (segment.x === head.x && segment.y === head.y) {
+                        gameOver = true;
+                        gameOverElement.classList.add('show');
+                        return;
+                    }
+                }
+
+                snake.unshift(head);
+
+                if (head.x === food.x && head.y === food.y) {
+                    score++;
+                    scoreElement.textContent = score;
+                    generateFood();
+                } else {
+                    snake.pop();
+                }
+            }
+
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#ffffff';
+            for (let segment of snake) {
+                ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
+            }
+
+            ctx.fillStyle = '#ff6b6b';
+            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+
+            setTimeout(gameLoop, 100);
+        }
+
+        gameLoop();
+    </script>
