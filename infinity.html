@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INFINITY AWARDS 2025 | A Noite das Lendas</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Manrope', 'sans-serif'] },
+                    colors: {
+                        'brand': '#FFD700', /* Dourado Gold */
+                        'gold': '#D4AF37', /* Adicionado para toques premium */
+                        'bg-main': '#030303',
+                        'bg-card': '#0A0A0A',
+                    },
+                    boxShadow: {
+                        'glow': '0 0 50px rgba(255, 215, 0, 0.3)',
+                        'gold-glow': '0 0 30px rgba(212, 175, 55, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #030303; color: #E5E5E5; overflow-x: hidden; }
+        
+        /* Tipografia */
+        p, li, span.font-light-custom { font-weight: 300; letter-spacing: 0.02em; }
+        h1, h2, h3 { letter-spacing: -0.03em; }
+
+        /* BOTÃO PRINCIPAL (Estilo Refinado) */
+        .btn-brand {
+            background-color: #FFD700;
+            color: black;
+            font-weight: 700;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.2);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+        .btn-brand:hover {
+            background-color: #ffdf33;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Card Style */
+        .award-card {
+            background-color: #0A0A0A;
+            border: 1px solid #1A1A1A;
+            border-radius: 24px;
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .award-card:hover { border-color: #333; transform: translateY(-4px); }
+        
+        /* Elementos invisíveis até a animação iniciar */
+        .gsap-hidden { visibility: hidden; opacity: 0; }
+        
+        /* Gradient Text */
+        .text-gradient-gold {
+            background: linear-gradient(to right, #D4AF37, #F2D06B, #D4AF37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="fixed top-0 w-full z-50 bg-[#030303]/90 backdrop-blur-xl border-b border-white/5">
+        <div class="max-w-[1200px] mx-auto px-6 h-24 flex items-center justify-between">
+            <div class="flex items-center gap-3 shrink-0">
+                <i class="fa-solid fa-trophy text-brand text-2xl drop-shadow-[0_0_10px_rgba(255,215,0,0.5)]"></i>
+                <div class="flex flex-col leading-none">
+                    <span class="font-extrabold text-xl text-white tracking-widest uppercase">INFINITY</span>
+                    <span class="font-light text-xs text-gray-400 tracking-[0.3em] uppercase">Awards 2025</span>
+                </div>
+            </div>
+
+            <div class="hidden md:flex items-center gap-10 text-xs font-medium uppercase tracking-widest text-gray-400">
+                <a href="#sobre" class="hover:text-white transition-colors">O Evento</a>
+                <a href="#legado" class="hover:text-white transition-colors">Legado</a>
+                <a href="#cronograma" class="hover:text-white transition-colors">Cronograma</a>
+                <a href="#categorias" class="hover:text-white transition-colors">Categorias</a>
+            </div>
+
+            <a href="#categorias" class="btn-brand py-3 px-8 shrink-0 ml-4 shadow-glow">
+                Votar Agora <i class="fa-solid fa-check-to-slot"></i>
+            </a>
+        </div>
+    </nav>
+
+    <header class="pt-40 pb-20 relative overflow-hidden flex flex-col items-center justify-center min-h-[95vh]">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-brand/10 blur-[150px] rounded-full pointer-events-none z-0"></div>
+        <div class="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-[#030303] via-transparent to-transparent z-10"></div>
+
+        <div class="max-w-5xl mx-auto px-6 text-center relative z-20">
+            <div class="gsap-hidden hero-elem inline-flex items-center gap-3 px-6 py-2 rounded-full border border-white/10 bg-white/5 text-gray-300 text-[10px] font-bold tracking-[0.2em] uppercase mb-10">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                15 de Dezembro • Ao Vivo
+            </div>
+
+            <h1 class="gsap-hidden hero-elem text-6xl md:text-8xl font-extrabold text-white mb-8 leading-[0.95] tracking-tighter uppercase">
+                Infinity <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600">Awards 2025</span>
+            </h1>
+
+            <p class="gsap-hidden hero-elem text-gray-400 font-light text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
+                Celebrando a excelência e a história da nossa comunidade. <br>
+                Uma noite para eternizar os grandes nomes que moldaram este ano.
+            </p>
+
+            <div class="gsap-hidden hero-elem flex flex-col sm:flex-row items-center justify-center gap-6 w-full">
+                <a href="#categorias" class="btn-brand py-4 px-10 text-sm w-full sm:w-auto shadow-glow">
+                    Ver Categorias <i class="fa-solid fa-arrow-down"></i>
+                </a>
+                
+                <a href="#sobre" class="px-8 py-4 rounded-full border border-white/10 bg-white/5 text-white text-sm font-bold tracking-wide hover:bg-white/10 transition-all w-full sm:w-auto text-center flex items-center justify-center gap-2 backdrop-blur-sm uppercase">
+                    <i class="fa-brands fa-youtube"></i> Definir Lembrete
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="border-y border-white/5 bg-[#050505] relative z-20">
+        <div class="max-w-[1000px] mx-auto px-6 py-10 flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
+            <div class="gsap-stat group cursor-default">
+                <span class="block text-4xl font-extrabold text-white mb-1 group-hover:text-brand transition-colors duration-500">25</span>
+                <span class="text-gray-500 font-light text-xs uppercase tracking-[0.2em]">Categorias</span>
+            </div>
+            <div class="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+            <div class="gsap-stat group cursor-default">
+                <span class="block text-4xl font-extrabold text-white mb-1 group-hover:text-brand transition-colors duration-500">120+</span>
+                <span class="text-gray-500 font-light text-xs uppercase tracking-[0.2em]">Indicados</span>
+            </div>
+            <div class="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+            <div class="gsap-stat group cursor-default">
+                <span class="block text-4xl font-extrabold text-white mb-1 group-hover:text-brand transition-colors duration-500">5ª</span>
+                <span class="text-gray-500 font-light text-xs uppercase tracking-[0.2em]">Edição Histórica</span>
+            </div>
+        </div>
+    </div>
+
+    <section id="sobre" class="py-32 relative">
+        <div class="max-w-[1200px] mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-20 items-center">
+                <div>
+                    <span class="text-brand text-xs font-bold uppercase tracking-widest mb-4 block">O Espírito Competitivo</span>
+                    <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-8 leading-tight">Mais do que um troféu.<br> Uma consagração.</h2>
+                    <p class="text-gray-400 font-light text-lg leading-relaxed mb-8 text-justify">
+                        O Infinity Awards não é apenas sobre vencer. É sobre reconhecer aqueles que, através da dedicação, transformaram o cenário. 
+                        Neste ano, celebramos não só a técnica, mas a <span class="text-white font-medium">união e a resiliência</span> da nossa comunidade.
+                    </p>
+                    <ul class="space-y-6">
+                        <li class="flex items-start gap-4 text-gray-300 font-light">
+                            <div class="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center shrink-0 text-brand mt-1">
+                                <i class="fa-solid fa-fire"></i>
+                            </div>
+                            <div>
+                                <strong class="block text-white text-sm uppercase tracking-wide mb-1">Paixão Pelo Jogo</strong>
+                                <span>Momentos que nos fizeram prender a respiração.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4 text-gray-300 font-light">
+                            <div class="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center shrink-0 text-brand mt-1">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <div>
+                                <strong class="block text-white text-sm uppercase tracking-wide mb-1">Força da Comunidade</strong>
+                                <span>Unidos pelo mesmo objetivo, divididos apenas pelas cores das equipes.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="award-card p-3 rotate-2 hover:rotate-0 transition-transform duration-700">
+                    <div class="bg-[#111] rounded-xl h-[500px] flex items-center justify-center relative overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
+                        <img src="https://placehold.co/600x800/111/333?text=Golden+Trophy+Moment" class="object-cover w-full h-full opacity-70" alt="Troféu">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <div class="absolute bottom-10 left-10">
+                            <p class="text-brand font-bold text-sm tracking-widest uppercase mb-2">Edição 2024</p>
+                            <p class="text-white text-xl font-light">"A glória pertence aos que ousam."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="legado" class="py-32 bg-[#050505]">
+        <div class="max-w-[1200px] mx-auto px-6">
+            <div class="text-center mb-20">
+                <span class="text-brand text-xs font-bold uppercase tracking-widest mb-3 block">Hall da Fama</span>
+                <h2 class="text-4xl font-extrabold text-white">Pilares da <span class="text-brand">Excelência</span></h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-6 h-auto md:h-[650px]">
+                <div class="award-card md:col-span-2 md:row-span-2 relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10"></div>
+                    <img src="https://placehold.co/800x800/080808/333?text=Main+Stage" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 opacity-60" alt="Palco">
+                    <div class="absolute bottom-0 left-0 p-10 z-20">
+                        <div class="w-12 h-1 bg-brand mb-6"></div>
+                        <h3 class="text-3xl font-bold text-white mb-3">O Grande Palco</h3>
+                        <p class="text-gray-400 font-light text-sm max-w-sm">Onde histórias são escritas e lendas são consagradas. Prepare-se para uma produção audiovisual sem precedentes.</p>
+                    </div>
+                </div>
+
+                <div class="award-card md:col-span-2 relative overflow-hidden group p-8 flex flex-col justify-center border-l-4 border-brand">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-white">
+                            <i class="fa-solid fa-scale-balanced text-xl"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Critério</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Júri Técnico</h3>
+                    <p class="text-gray-400 font-light text-sm">Votos auditados por especialistas e analistas renomados do cenário.</p>
+                </div>
+
+                <div class="award-card p-8 flex flex-col justify-center group hover:bg-white/5 transition-colors">
+                    <i class="fa-solid fa-globe text-3xl text-gray-500 mb-6 group-hover:text-brand transition-colors"></i>
+                    <h3 class="text-lg font-bold text-white mb-2">Voto Popular</h3>
+                    <p class="text-gray-500 font-light text-xs">A voz da comunidade tem peso decisivo nas categorias principais.</p>
+                </div>
+
+                <div class="award-card p-8 flex flex-col justify-center group hover:bg-white/5 transition-colors">
+                    <i class="fa-solid fa-star text-3xl text-gray-500 mb-6 group-hover:text-gold transition-colors"></i>
+                    <h3 class="text-lg font-bold text-white mb-2">Hall of Fame</h3>
+                    <p class="text-gray-500 font-light text-xs">Homenagem vitalícia aos pioneiros que construíram nossa história.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="cronograma" class="py-32 relative border-t border-white/5">
+        <div class="max-w-[900px] mx-auto px-6">
+            <h2 class="text-3xl font-extrabold text-center mb-16 tracking-tight">Cronograma da Noite</h2>
+            
+            <div class="award-card overflow-hidden">
+                <div class="grid grid-cols-12 text-left bg-[#111] border-b border-[#222]">
+                    <div class="col-span-3 py-6 px-8 font-bold text-gray-500 text-xs uppercase tracking-widest">Horário</div>
+                    <div class="col-span-9 py-6 px-8 font-bold text-brand bg-brand/5 text-xs uppercase tracking-widest border-l border-[#222]">Atração</div>
+                </div>
+                
+                <div class="grid grid-cols-12 border-b border-[#222] hover:bg-white/5 transition-colors group">
+                    <div class="col-span-3 py-5 px-8 font-mono text-sm text-gray-400 group-hover:text-white transition-colors">20:00</div>
+                    <div class="col-span-9 py-5 px-8 text-sm text-white border-l border-[#222]">
+                        <strong class="block mb-1">Abertura Oficial</strong>
+                        <span class="text-gray-500 text-xs font-light">Show de luzes e introdução dos hosts.</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-12 border-b border-[#222] hover:bg-white/5 transition-colors group">
+                    <div class="col-span-3 py-5 px-8 font-mono text-sm text-gray-400 group-hover:text-white transition-colors">20:30</div>
+                    <div class="col-span-9 py-5 px-8 text-sm text-white border-l border-[#222]">
+                        <strong class="block mb-1">Categorias Técnicas</strong>
+                        <span class="text-gray-500 text-xs font-light">Melhor Defesa, Assistência do Ano e Staff.</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-12 border-b border-[#222] hover:bg-white/5 transition-colors group">
+                    <div class="col-span-3 py-5 px-8 font-mono text-sm text-gray-400 group-hover:text-white transition-colors">21:30</div>
+                    <div class="col-span-9 py-5 px-8 text-sm text-white border-l border-[#222]">
+                        <strong class="block mb-1">Show do Intervalo</strong>
+                        <span class="text-gray-500 text-xs font-light">Apresentação especial da comunidade.</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-12 hover:bg-white/5 transition-colors group">
+                    <div class="col-span-3 py-5 px-8 font-mono text-sm text-brand font-bold">22:00</div>
+                    <div class="col-span-9 py-5 px-8 text-sm text-white border-l border-[#222] bg-brand/5">
+                        <strong class="block mb-1 text-lg">Premiação Principal</strong>
+                        <span class="text-gray-400 text-xs font-light">Revelação do MVP e Melhor Equipe do Ano.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="categorias" class="py-32 relative bg-[#020202]">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand/5 blur-[120px] rounded-full pointer-events-none"></div>
+
+        <div class="max-w-[1100px] mx-auto px-6 relative z-10">
+            <div class="text-center mb-20">
+                <h2 class="text-4xl font-extrabold text-white mb-4 uppercase tracking-tight">Categorias em Destaque</h2>
+                <p class="text-gray-400 font-light">A votação popular está aberta. Escolha seus favoritos.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-10 items-stretch">
+                
+                <div class="award-card p-10 flex flex-col hover:border-white/20 transition-all">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-2xl font-bold text-white tracking-tight">Revelação do Ano</h3>
+                            <p class="text-gray-500 font-light text-xs uppercase tracking-widest mt-2">Futuro da Modalidade</p>
+                        </div>
+                        <i class="fa-solid fa-rocket text-gray-600 text-2xl"></i>
+                    </div>
+
+                    <div class="my-6 py-4 border-y border-white/5">
+                        <span class="text-green-500 text-sm font-bold flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> Votação Aberta</span>
+                    </div>
+
+                    <p class="text-xs text-gray-500 uppercase mb-4 tracking-wider">Indicados:</p>
+                    <ul class="space-y-4 mb-10 text-sm text-gray-300 font-light flex-grow">
+                        <li class="flex items-center gap-4 p-3 bg-white/5 rounded-lg border border-transparent hover:border-brand/30 transition-colors cursor-pointer">
+                            <div class="w-8 h-8 rounded bg-gray-700"></div>
+                            <span>Player "Speed" One</span>
+                        </li>
+                        <li class="flex items-center gap-4 p-3 bg-white/5 rounded-lg border border-transparent hover:border-brand/30 transition-colors cursor-pointer">
+                            <div class="w-8 h-8 rounded bg-gray-700"></div>
+                            <span>Player "Rookie" Two</span>
+                        </li>
+                        <li class="flex items-center gap-4 p-3 bg-white/5 rounded-lg border border-transparent hover:border-brand/30 transition-colors cursor-pointer">
+                            <div class="w-8 h-8 rounded bg-gray-700"></div>
+                            <span>Player "Air" Three</span>
+                        </li>
+                    </ul>
+
+                    <a href="#" class="block w-full py-4 rounded-full border border-white/20 text-center font-bold text-white hover:bg-white hover:text-black hover:border-white transition-all text-xs uppercase tracking-widest">
+                        Votar nesta categoria
+                    </a>
+                </div>
+
+                <div class="award-card p-1 relative shadow-glow transform md:-translate-y-4 bg-gradient-to-b from-brand to-[#0A0A0A]">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-brand text-white text-[10px] font-bold px-6 py-2 rounded-full uppercase tracking-[0.2em] shadow-lg border border-white/10">
+                        Categoria Principal
+                    </div>
+                    
+                    <div class="bg-[#0A0A0A] rounded-[20px] p-10 h-full flex flex-col">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-3xl font-extrabold text-white tracking-tight">MVP da Temporada</h3>
+                                <p class="text-brand font-bold text-xs uppercase tracking-widest mt-2">O Melhor dos Melhores</p>
+                            </div>
+                            <i class="fa-solid fa-crown text-brand text-3xl drop-shadow-lg"></i>
+                        </div>
+
+                        <div class="my-6 py-4 border-y border-white/10">
+                            <p class="text-gray-400 text-sm italic font-light">"O prêmio máximo para aquele que dominou todas as estatísticas e liderou sua equipe à glória."</p>
+                        </div>
+
+                        <p class="text-xs text-gray-500 uppercase mb-4 tracking-wider">Finalistas:</p>
+                        <ul class="space-y-4 mb-10 text-sm text-white font-medium flex-grow">
+                            <li class="flex items-center justify-between p-4 bg-gradient-to-r from-brand/10 to-transparent rounded-lg border border-brand/20">
+                                <span class="flex items-center gap-3"><i class="fa-solid fa-star text-brand text-xs"></i> Lenda "King" Seven</span>
+                                <span class="text-xs text-gray-400">Team Alpha</span>
+                            </li>
+                            <li class="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-transparent opacity-60 hover:opacity-100 transition-opacity">
+                                <span>Striker "Goal" Machine</span>
+                                <span class="text-xs text-gray-500">Team Beta</span>
+                            </li>
+                            <li class="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-transparent opacity-60 hover:opacity-100 transition-opacity">
+                                <span>Defender "Wall" Pro</span>
+                                <span class="text-xs text-gray-500">Team Gamma</span>
+                            </li>
+                        </ul>
+
+                        <a href="#" class="btn-brand w-full py-5 text-sm shadow-xl">
+                            Votar no MVP <i class="fa-solid fa-check-double"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="mt-16 text-center">
+                <a href="#" class="text-gray-500 text-sm hover:text-white transition-colors border-b border-transparent hover:border-white pb-1">Ver todas as 25 categorias</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-32 bg-[#050505] border-t border-white/5">
+        <div class="max-w-[800px] mx-auto px-6">
+            <h2 class="text-3xl font-extrabold text-center mb-16">Dúvidas Frequentes</h2>
+            <div class="space-y-4">
+                <details class="award-card group open:border-brand/40 transition-colors">
+                    <summary class="flex justify-between items-center p-6 cursor-pointer font-bold select-none text-white hover:text-brand transition-colors text-sm uppercase tracking-wide">
+                        Onde assistir ao evento?
+                        <i class="fa-solid fa-plus text-gray-500 group-open:rotate-45 transition-transform"></i>
+                    </summary>
+                    <div class="px-6 pb-6 text-gray-400 font-light text-sm leading-relaxed">
+                        A transmissão oficial ocorrerá em nossos canais da Twitch e YouTube, com retransmissão autorizada para parceiros da comunidade.
+                    </div>
+                </details>
+                <details class="award-card group open:border-brand/40 transition-colors">
+                    <summary class="flex justify-between items-center p-6 cursor-pointer font-bold select-none text-white hover:text-brand transition-colors text-sm uppercase tracking-wide">
+                        Como funciona o sistema de votação?
+                        <i class="fa-solid fa-plus text-gray-500 group-open:rotate-45 transition-transform"></i>
+                    </summary>
+                    <div class="px-6 pb-6 text-gray-400 font-light text-sm leading-relaxed">
+                        O voto popular tem peso de 40% na decisão final. Os outros 60% são definidos pelo Júri Técnico composto por analistas, ex-jogadores e casters. É necessário logar com sua conta para garantir voto único.
+                    </div>
+                </details>
+                <details class="award-card group open:border-brand/40 transition-colors">
+                    <summary class="flex justify-between items-center p-6 cursor-pointer font-bold select-none text-white hover:text-brand transition-colors text-sm uppercase tracking-wide">
+                        Posso comprar ingressos presenciais?
+                        <i class="fa-solid fa-plus text-gray-500 group-open:rotate-45 transition-transform"></i>
+                    </summary>
+                    <div class="px-6 pb-6 text-gray-400 font-light text-sm leading-relaxed">
+                        Esta edição será majoritariamente online, com uma plateia seleta de convidados (indicados e imprensa). Fique atento às redes sociais para sorteios de convites VIP.
+                    </div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-white/10 bg-[#020202] text-center">
+        <div class="flex flex-col items-center justify-center gap-6">
+            <div class="flex items-center gap-3 opacity-80 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-trophy text-brand text-2xl"></i>
+                <div class="text-left leading-none">
+                    <span class="block font-extrabold text-lg text-white tracking-widest">INFINITY</span>
+                    <span class="block font-light text-[10px] text-gray-500 tracking-[0.4em] uppercase">Awards 2025</span>
+                </div>
+            </div>
+            
+            <div class="flex gap-6 mt-4">
+                <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-brand hover:scale-110 transition-all"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-brand hover:scale-110 transition-all"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-brand hover:scale-110 transition-all"><i class="fa-brands fa-discord"></i></a>
+            </div>
+
+            <p class="text-gray-600 font-light text-xs mt-8 max-w-md mx-auto">
+                Celebrando a excelência. Honrando a história. <br>
+                © 2025 Infinity Awards Organization. Todos os direitos reservados.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+
+    <script>
+        const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Animação Hero mais lenta e elegante
+        const tl = gsap.timeline();
+        tl.to(".hero-elem", { autoAlpha: 1, y: 0, duration: 1.5, stagger: 0.3, ease: "power4.out" });
+        
+        // Stats
+        gsap.from(".gsap-stat", {
+            scrollTrigger: { trigger: ".gsap-stat", start: "top 95%" },
+            y: 40, opacity: 0, duration: 1, stagger: 0.2, ease: "power3.out"
+        });
+
+        // Seções
+        const sections = document.querySelectorAll('section');
+        sections.forEach(sec => {
+            gsap.from(sec.children, {
+                scrollTrigger: { trigger: sec, start: "top 80%" },
+                y: 50, opacity: 0, duration: 1.2, stagger: 0.15, ease: "power2.out"
+            });
+        });
+    </script>
+</body>
+</html>
