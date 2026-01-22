@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Plano Co-op 2026 - Felipe & Hiago</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VISUAL BASE (DUOLINGO VIBRANT) --- */
+        :root {
+            --bg: #f7f9fc;
+            --card: #ffffff;
+            --green: #58cc02; --green-dark: #46a302;
+            --blue: #1cb0f6; --blue-dark: #1899d6;
+            --purple: #ce82ff; --purple-dark: #a561d1;
+            --orange: #ff9600; --orange-dark: #cc7800;
+            --red: #ff4b4b; --red-dark: #d43636;
+            --text: #4b4b4b; --text-light: #777;
+            --border: #e5e5e5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Nunito', sans-serif;
+            height: 100svh;
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+
+        /* HEADER */
+        header { padding: 20px 24px; display: flex; align-items: center; justify-content: center; }
+        .progress-track { width: 100%; height: 16px; background: #e5e5e5; border-radius: 12px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--green); width: 10%; border-radius: 12px; transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s; position: relative; }
+        .progress-fill::after { content: ''; position: absolute; top: 3px; left: 3px; right: 3px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 10px; }
+
+        /* VIEWPORT */
+        #viewport { flex: 1; position: relative; width: 100%; display: flex; justify-content: center; align-items: center; padding: 24px; }
+
+        .slide {
+            position: absolute; width: 100%; max-width: 400px;
+            display: flex; flex-direction: column; align-items: center;
+            opacity: 0; transform: scale(0.8) translateY(50px);
+            pointer-events: none; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .slide.active { opacity: 1; transform: scale(1) translateY(0); pointer-events: all; z-index: 10; }
+
+        /* HERO & TEXT */
+        .emoji-hero { font-size: 80px; margin-bottom: 20px; filter: drop-shadow(0 8px 0 rgba(0,0,0,0.1)); animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        h1 { font-size: 1.8rem; font-weight: 900; text-align: center; margin-bottom: 12px; line-height: 1.2; color: var(--text); }
+        p { font-size: 1.1rem; color: var(--text-light); text-align: center; font-weight: 700; line-height: 1.4; margin-bottom: 24px; }
+
+        /* --- ELEMENTOS CRIATIVOS --- */
+
+        /* LAYOUT 1: PLAYER SELECT (CORRIGIDO) */
+        .player-select { display: flex; gap: 12px; width: 100%; }
+        .player-card {
+            flex: 1; background: white; border: 2px solid var(--border); border-bottom-width: 4px; border-radius: 16px;
+            padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        .player-card:active { transform: scale(0.95); }
+        
+        /* Estado Selecionado */
+        .player-card.selected {
+            border-color: var(--green);
+            background: #f0fff4;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 0 var(--green-dark);
+        }
+        .player-card.selected .p-role { color: var(--green); }
+
+        .p-avatar { font-size: 40px; margin-bottom: 5px; }
+        .p-role { font-size: 0.8rem; font-weight: 900; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; }
+        .p-name { font-size: 1.1rem; font-weight: 800; color: var(--text); }
+
+        /* LAYOUT 2: TERMINAL */
+        .terminal-box {
+            width: 100%; background: #2b2b2b; border-radius: 16px; padding: 20px;
+            font-family: monospace; color: #58cc02; font-size: 0.9rem; text-align: left;
+            border-bottom: 4px solid #1a1a1a; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .term-line { margin-bottom: 8px; display: block; }
+        .term-cursor { display: inline-block; width: 8px; height: 14px; background: #58cc02; animation: blink 1s infinite; vertical-align: middle; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* LAYOUT 3: JOGO */
+        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: var(--border); padding: 10px; border-radius: 20px; margin-bottom: 20px; }
+        .cell { width: 70px; height: 70px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 900; color: var(--text-light); cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.1); transition: transform 0.1s; }
+        .cell:active { transform: translateY(4px); box-shadow: none; }
+        .cell.taken { cursor: default; transform: none; box-shadow: 0 4px 0 rgba(0,0,0,0.1); }
+        .status-msg { color: var(--orange); font-weight: 800; text-align: center; margin-bottom: 10px; min-height: 24px; }
+
+        /* LAYOUT 4: UI SLIDERS */
+        .setting-row { width: 100%; margin-bottom: 16px; }
+        .setting-label { display: flex; justify-content: space-between; font-weight: 800; color: var(--purple-dark); margin-bottom: 5px; font-size: 0.9rem; }
+        .fake-range { width: 100%; height: 16px; background: rgba(206, 130, 255, 0.3); border-radius: 10px; position: relative; overflow: hidden; }
+        .fake-fill { height: 100%; background: var(--purple); width: 0%; border-radius: 10px; animation: fillUp 1s ease forwards 0.5s; }
+        @keyframes fillUp { from { width: 0%; } to { width: 90%; } }
+
+        /* LAYOUT 5: SERVER STATUS */
+        .server-rack { width: 100%; background: white; border: 2px solid var(--border); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+        .server-unit { display: flex; align-items: center; justify-content: space-between; background: var(--bg); padding: 12px; border-radius: 10px; }
+        .unit-name { font-weight: 800; color: var(--text); }
+        .unit-status { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 800; color: var(--green); text-transform: uppercase; }
+        .led { width: 10px; height: 10px; background: var(--green); border-radius: 50%; box-shadow: 0 0 10px var(--green); animation: pulseLed 1s infinite alternate; }
+        @keyframes pulseLed { from { opacity: 0.5; } to { opacity: 1; } }
+
+        /* LAYOUT 6: SECRET FILE */
+        .secret-file {
+            background: #fff; border: 2px solid var(--text); padding: 20px; transform: rotate(-2deg);
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.1); width: 100%; text-align: center; position: relative;
+        }
+        .stamp {
+            border: 3px solid var(--red); color: var(--red); font-weight: 900; font-size: 1.5rem;
+            text-transform: uppercase; padding: 5px 10px; display: inline-block; transform: rotate(-10deg);
+            margin-bottom: 10px; opacity: 0.8;
+        }
+
+        /* FOOTER & BUTTON */
+        footer { padding: 24px; background: var(--card); border-top: 2px solid var(--border); }
+        .btn-main {
+            width: 100%; padding: 18px; border-radius: 18px; border: none;
+            font-family: 'Nunito', sans-serif; font-size: 1.2rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;
+            color: white; cursor: pointer; transition: all 0.1s; box-shadow: 0 6px 0 rgba(0,0,0,0.2); position: relative; top: 0;
+        }
+        .btn-main:active { top: 6px; box-shadow: none; }
+        .btn-main:disabled { background: #e5e5e5; color: #aaa; box-shadow: none; top: 0; cursor: not-allowed; }
+
+        /* Confetti */
+        .confetti { position: absolute; width: 12px; height: 12px; background: #f00; animation: fall 2s linear forwards; z-index: 100; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+
+    </style>
+</head>
+<body class="theme-green">
+
+    <header>
+        <div class="progress-track">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+    </header>
+
+    <main id="viewport">
+        
+        <div class="slide active" data-color="var(--green)" data-shadow="var(--green-dark)">
+            <div class="emoji-hero">🎮</div>
+            <h1>Dupla Confirmada?</h1>
+            <p>12 meses. Modo Co-op.<br>Sem tutoriais fáceis.</p>
+            
+            <div class="player-select">
+                <div class="player-card" id="cardFelipe" onclick="selectPlayer('Felipe')">
+                    <div class="p-avatar">🧢</div>
+                    <div class="p-role">Player 1</div>
+                    <div class="p-name">Felipe</div>
+                </div>
+                <div class="player-card" id="cardHiago" onclick="selectPlayer('Hiago')">
+                    <div class="p-avatar">🕹️</div>
+                    <div class="p-role">Player 2</div>
+                    <div class="p-name">Hiago</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" data-color="var(--blue)" data-shadow="var(--blue-dark)">
+            <div class="emoji-hero">🤖</div>
+            <h1>Q1: The Matrix</h1>
+            <p>Janeiro a Março. Base Pura.<br>JavaScript V8 & CSS Raiz.</p>
+            
+            <div class="terminal-box" onclick="playPop()">
+                <span class="term-line">> connecting felipe & hiago...</span>
+                <span class="term-line">> load_module "JS Hard Parts"</span>
+                <span class="term-line">> removing "bad_practices"</span>
+                <span class="term-line" style="color: #fff">[██████████] 100%</span>
+                <span class="term-line">> system_ready<span class="term-cursor"></span></span>
+            </div>
+        </div>
+
+        <div class="slide" data-color="var(--orange)" data-shadow="var(--orange-dark)">
+            <div class="emoji-hero">🧠</div>
+            <h1 style="color: var(--orange)">Desafio Lógico</h1>
+            <p>Prove que estão acordados.<br>Vença a IA para passar.</p>
+            <div class="status-msg" id="statusMsg">Sua vez (Você é O)</div>
+            <div class="board" id="board"></div>
+        </div>
+
+        <div class="slide" data-color="var(--purple)" data-shadow="var(--purple-dark)">
+            <div class="emoji-hero">✨</div>
+            <h1>Q2: Interface God</h1>
+            <p>Abril a Junho.<br>React, Framer & TypeScript.</p>
+            
+            <div style="width: 100%" onclick="playPop()">
+                <div class="setting-row">
+                    <div class="setting-label"><span>Qualidade Visual</span><span>ULTRA</span></div>
+                    <div class="fake-range"><div class="fake-fill" style="animation-delay: 0.1s"></div></div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label"><span>Interactive UI</span><span>MAX</span></div>
+                    <div class="fake-range"><div class="fake-fill" style="animation-delay: 0.3s; width: 80%"></div></div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label"><span>Gambiarra</span><span>0%</span></div>
+                    <div class="fake-range"><div class="fake-fill" style="background: var(--red); width: 5%; animation: none;"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" data-color="var(--red)" data-shadow="var(--red-dark)">
+            <div class="emoji-hero">🔋</div>
+            <h1>Q3: Backend Heavy</h1>
+            <p>Julho a Setembro.<br>Servidores, Dados & Segurança.</p>
+            
+            <div class="server-rack" onclick="playPop()">
+                <div class="server-unit">
+                    <span class="unit-name">API (Go/Node)</span>
+                    <span class="unit-status"><div class="led"></div> 12ms</span>
+                </div>
+                <div class="server-unit">
+                    <span class="unit-name">Database (SQL)</span>
+                    <span class="unit-status"><div class="led"></div> SYNCED</span>
+                </div>
+                <div class="server-unit">
+                    <span class="unit-name">Hiago's Deploy</span>
+                    <span class="unit-status" style="color: var(--red)"><div class="led" style="background: var(--red); box-shadow: 0 0 10px var(--red)"></div> ERROR</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" data-color="var(--text)" data-shadow="#000">
+            <div class="emoji-hero">👑</div>
+            <h1>Missão Final</h1>
+            <p>Janeiro 2027.</p>
+            
+            <div class="secret-file">
+                <div class="stamp">CLASSIFIED</div>
+                <h3 style="font-weight: 900; margin: 10px 0;">PROJECT: REBIRTH</h3>
+                <p style="font-size: 0.9rem; margin: 0; color: #000;">
+                    Recriar a plataforma "DevDuo" do zero.<br>
+                    Arquitetura Sênior.<br>
+                    Sem ajuda.
+                </p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <button class="btn-main" id="nextBtn">ESCOLHA SEU PLAYER</button>
+    </footer>
+
+    <script>
+        /* --- SOM (ZzFX) --- */
+        let zzfx,zzfxV,zzfxX;zzfxV=.3;zzfx=(p=1,k=.05,b=220,e=0,r=0,t=.1,q=0,D=1,u=0,y=0,v=0,z=0,l=0,E=0,A=0,F=0,c=0,w=1,m=0,B=0)=>{let M=Math,R=44100,d=2*M.PI,G=u*=500*d/R/R,C=b*=(1-k+2*k*M.random(k=[]))*d/R,g=0,H=0,a=0,n=1,I=0,J=0,f=0,x,h;e=R*e+9;m*=R;r*=R;t*=R;c*=R;y*=500*d/R**3;A*=d/R;v*=d/R;z*=R;l=R*l|0;for(h=e+m+r+t+c|0;a<h;k[a++]=f)++J%(100*F|0)||(f=q?1<q?2<q?3<q?M.sin((g%d)**3):M.max(M.min(M.tan(g),1),-1):1-(2*g/d%2+2)%2:1-4*M.abs(M.round(g/d)-g/d):M.sin(g),f=(l?1-B+B*M.sin(d*a/l):1)*(0<f?1:-1)*M.abs(f)**D*p*zzfxV*(a<e?a/e:a<e+m?1-(a-e)/m*(1-w):a<e+m+r?w:a<h-c?w-(a-e-m-r)/t*w:0),f=c?f/2+(c>a?0:(a<h-c?1:(h-a)/c)*k[a-c|0]/2):f),x=(b+=u+=y)*M.cos(A*H++),g+=x-x*B*(1-1E9*(M.sin(a)+1)%2),n&&++n>z&&(b+=v,C+=v,n=0),!l||++I%l||(b=C,u=G,n=n||1);p=zzfxX.createBuffer(1,h,R);p.getChannelData(0).set(k);b=zzfxX.createBufferSource();b.buffer=p;b.connect(zzfxX.destination);b.start();return b};zzfxX=new (window.AudioContext||webkitAudioContext);
+
+        const playPop = () => { try { zzfx(...[2.1,,537,.02,.01,.06,,2,,,,,,,.08,,.1]); } catch(e){} };
+        const playClack = () => { try { zzfx(...[1.8,,335,.01,.03,.09,1,2.6,-8.7,,,,,,,.1,,.51,.05]); } catch(e){} };
+        const playWin = () => { try { zzfx(...[1.3,,425,.06,.21,.46,1,0.8,4.9,,,,.1,.5,,.2,.02,.62,.06]); } catch(e){} };
+        const playErr = () => { try { zzfx(...[1.1,,180,.05,.1,.3,4,2.9,-6.2,,,,,,,.1,,.67,.08]); } catch(e){} };
+        const playSelect = () => { try { zzfx(...[2.2,,1345,.01,.01,.03,,2.9,,,,,,,.05,,.01]); } catch(e){} };
+
+        /* --- LOGICA DO SLIDE 1: PLAYER SELECT --- */
+        function selectPlayer(player) {
+            // Unlock Audio
+            if(zzfxX.state === 'suspended') zzfxX.resume();
+
+            // Reset Styles
+            document.querySelectorAll('.player-card').forEach(c => c.classList.remove('selected'));
+            
+            // Add Style to Selected
+            const cardId = player === 'Felipe' ? 'cardFelipe' : 'cardHiago';
+            document.getElementById(cardId).classList.add('selected');
+            
+            // Play Sound
+            playSelect();
+
+            // Enable Button
+            const btn = document.getElementById('nextBtn');
+            btn.innerText = "START GAME";
+            // Flash button
+            btn.style.transform = "scale(1.05)";
+            setTimeout(() => btn.style.transform = "scale(1)", 150);
+        }
+
+        /* --- NAVEGAÇÃO --- */
+        const slides = document.querySelectorAll('.slide');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressBar = document.getElementById('progressBar');
+        let currentIndex = 0;
+
+        function updateSlide() {
+            slides.forEach((s, i) => {
+                s.classList.remove('active');
+                if (i === currentIndex) s.classList.add('active');
+            });
+
+            const color = slides[currentIndex].getAttribute('data-color');
+            const shadow = slides[currentIndex].getAttribute('data-shadow');
+
+            progressBar.style.width = `${((currentIndex + 1) / slides.length) * 100}%`;
+            progressBar.style.background = color;
+            nextBtn.style.background = color;
+            nextBtn.style.boxShadow = `0 6px 0 ${shadow}`;
+
+            if (currentIndex === 2) { // Game Slide
+                nextBtn.disabled = true;
+                nextBtn.innerText = "🔒 Bloqueado";
+                nextBtn.style.background = "#ccc";
+                nextBtn.style.boxShadow = "none";
+                resetGame();
+            } else {
+                nextBtn.disabled = false;
+                if (currentIndex === 0) {
+                     // Check if player selected (visually only, logic is lenient)
+                     nextBtn.innerText = document.querySelector('.selected') ? "START GAME" : "ESCOLHA SEU PLAYER";
+                } else {
+                     nextBtn.innerText = currentIndex === slides.length - 1 ? "ACEITAR MISSÃO!" : "BORA LÁ";
+                }
+            }
+        }
+
+        nextBtn.addEventListener('click', () => {
+            playClack();
+            if (zzfxX.state === 'suspended') zzfxX.resume();
+
+            // Validacao simples do slide 1
+            if (currentIndex === 0 && !document.querySelector('.selected')) {
+                // Seleciona Felipe por padrao se o usuario esquecer
+                selectPlayer('Felipe');
+            }
+
+            if (currentIndex < slides.length - 1) {
+                currentIndex++;
+                updateSlide();
+            } else {
+                alert("Bora Hiago e Felipe! 🚀");
+            }
+        });
+
+        /* --- JOGO DA VELHA --- */
+        const boardEl = document.getElementById('board');
+        const statusMsg = document.getElementById('statusMsg');
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let gameActive = true;
+
+        function initGame() {
+            boardEl.innerHTML = '';
+            board.forEach((_, i) => {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.index = i;
+                cell.onclick = () => onCellClick(i, cell);
+                boardEl.appendChild(cell);
+            });
+        }
+
+        function onCellClick(i, cell) {
+            if (board[i] !== '' || !gameActive) {
+                if(!gameActive && board[i] === '') playErr();
+                return;
+            }
+            playPop();
+            board[i] = 'O';
+            cell.innerText = '⭕';
+            cell.classList.add('taken');
+            
+            if (checkWin('O')) return endGame(true);
+            if (!board.includes('')) return resetGame();
+
+            gameActive = false;
+            statusMsg.innerText = "IA pensando...";
+            
+            setTimeout(() => {
+                let empty = board.map((v, idx) => v === '' ? idx : null).filter(v => v !== null);
+                if (empty.length > 0) {
+                    const rnd = empty[Math.floor(Math.random() * empty.length)];
+                    board[rnd] = 'X';
+                    const aiCell = document.querySelector(`.cell[data-index='${rnd}']`);
+                    aiCell.innerText = '❌';
+                    aiCell.classList.add('taken');
+                    playPop();
+
+                    if (checkWin('X')) {
+                        statusMsg.innerText = "IA Venceu. Tente de novo.";
+                        playErr();
+                        setTimeout(resetGame, 1000);
+                    } else {
+                        gameActive = true;
+                        statusMsg.innerText = "Sua vez";
+                    }
+                }
+            }, 600);
+        }
+
+        function checkWin(player) {
+            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            return wins.some(w => (board[w[0]] == player && board[w[1]] == player && board[w[2]] == player));
+        }
+
+        function endGame(playerWon) {
+            gameActive = false;
+            if (playerWon) {
+                playWin();
+                statusMsg.innerText = "DESBLOQUEADO!";
+                statusMsg.style.color = "var(--green)";
+                nextBtn.disabled = false;
+                nextBtn.innerText = "CONTINUAR";
+                nextBtn.style.background = "var(--orange)";
+                nextBtn.style.boxShadow = "0 6px 0 var(--orange-dark)";
+                fireConfetti();
+            }
+        }
+
+        function resetGame() {
+            board.fill('');
+            gameActive = true;
+            statusMsg.innerText = "Sua vez (Você é O)";
+            statusMsg.style.color = "var(--orange)";
+            initGame();
+        }
+
+        function fireConfetti() {
+            for(let i=0; i<30; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.backgroundColor = ['#f00','#0f0','#00f','#ff0'][Math.floor(Math.random()*4)];
+                c.style.animationDuration = (Math.random() * 1 + 1) + 's';
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 2000);
+            }
+        }
+
+        initGame();
+        updateSlide();
+        document.body.onclick = () => { if(zzfxX && zzfxX.state === 'suspended') zzfxX.resume(); }
+
+    </script>
+</body>
+</html>
