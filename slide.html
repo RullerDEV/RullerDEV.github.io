@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <title>PDF Presenter</title>
 
@@ -11,34 +11,49 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --bg: #050505;
+      --timeline-color: #38bdf8;
+      --safe-padding: 0px;
+    }
+
     html,
     body {
       margin: 0;
       width: 100%;
+      min-width: 100%;
       height: 100%;
+      min-height: 100%;
       overflow: hidden;
-      background: #050505;
+      background: var(--bg);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     body {
-      display: grid;
-      place-items: center;
       user-select: none;
+      touch-action: manipulation;
     }
 
     #stage {
       position: fixed;
       inset: 0;
+      width: 100vw;
+      width: 100dvw;
+      height: 100vh;
+      height: 100dvh;
       overflow: hidden;
       display: grid;
       place-items: center;
-      background: #050505;
+      background: var(--bg);
     }
 
     canvas {
       display: block;
       background: white;
+      max-width: 100vw;
+      max-width: 100dvw;
+      max-height: 100vh;
+      max-height: 100dvh;
     }
 
     #loading {
@@ -49,7 +64,7 @@
       place-items: center;
       color: rgba(255,255,255,.68);
       font-size: 14px;
-      background: #050505;
+      background: var(--bg);
     }
 
     #error {
@@ -62,7 +77,7 @@
       color: white;
       padding: 30px;
       line-height: 1.5;
-      background: #050505;
+      background: var(--bg);
     }
 
     .zone {
@@ -83,12 +98,12 @@
 
     #counter {
       position: fixed;
-      right: 16px;
-      bottom: 14px;
+      right: max(16px, env(safe-area-inset-right));
+      bottom: max(14px, env(safe-area-inset-bottom));
       z-index: 55;
 
-      color: rgba(255, 255, 255, 0.82);
-      background: rgba(0, 0, 0, 0.38);
+      color: rgba(255, 255, 255, 0.86);
+      background: rgba(0, 0, 0, 0.42);
       border: 1px solid rgba(255, 255, 255, 0.12);
       backdrop-filter: blur(10px);
 
@@ -103,7 +118,8 @@
       pointer-events: none;
     }
 
-    body:hover #counter {
+    body:hover #counter,
+    body.show-ui #counter {
       opacity: 1;
       transform: translateY(0);
     }
@@ -111,11 +127,11 @@
     #flash {
       position: fixed;
       left: 50%;
-      bottom: 92px;
+      bottom: max(92px, calc(env(safe-area-inset-bottom) + 92px));
       transform: translateX(-50%);
       z-index: 60;
-      color: rgba(255,255,255,.75);
-      background: rgba(0,0,0,.36);
+      color: rgba(255,255,255,.78);
+      background: rgba(0,0,0,.38);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255,255,255,.1);
       border-radius: 999px;
@@ -124,6 +140,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity .18s ease;
+      white-space: nowrap;
     }
 
     #bottomHoverArea {
@@ -131,22 +148,23 @@
       left: 0;
       right: 0;
       bottom: 0;
-      height: 115px;
+      height: 128px;
       z-index: 40;
     }
 
     #timeline {
       position: fixed;
       left: 50%;
-      bottom: 18px;
+      bottom: max(18px, calc(env(safe-area-inset-bottom) + 18px));
       transform: translateX(-50%) translateY(18px);
       width: min(760px, calc(100vw - 36px));
+      width: min(760px, calc(100dvw - 36px));
       z-index: 70;
 
       padding: 12px 14px 14px;
       border-radius: 18px;
 
-      background: rgba(8, 10, 14, 0.86);
+      background: rgba(8, 10, 14, 0.88);
       border: 1px solid rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(18px);
       box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
@@ -157,23 +175,35 @@
     }
 
     #bottomHoverArea:hover + #timeline,
-    #timeline:hover {
+    #timeline:hover,
+    body.show-ui #timeline {
       opacity: 1;
       pointer-events: auto;
       transform: translateX(-50%) translateY(0);
     }
 
     #bottomHoverArea:hover ~ #counter,
-    #timeline:hover ~ #counter {
+    #timeline:hover ~ #counter,
+    body.show-ui #counter.hide-when-timeline {
       opacity: 0;
     }
 
     #timelineInfo {
-      color: rgba(255, 255, 255, 0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: rgba(255, 255, 255, 0.93);
       font-size: 13px;
       font-weight: 650;
       margin-bottom: 8px;
       text-align: center;
+    }
+
+    #fitLabel {
+      color: rgba(255, 255, 255, .62);
+      font-size: 11px;
+      font-weight: 600;
     }
 
     #timelineRange {
@@ -184,10 +214,10 @@
       -webkit-appearance: none;
       background: linear-gradient(
         to right,
-        #38bdf8 0%,
-        #38bdf8 var(--progress, 0%),
-        rgba(255,255,255,.25) var(--progress, 0%),
-        rgba(255,255,255,.25) 100%
+        var(--timeline-color) 0%,
+        var(--timeline-color) var(--progress, 0%),
+        rgba(255,255,255,.26) var(--progress, 0%),
+        rgba(255,255,255,.26) 100%
       );
       border-radius: 999px;
       outline: none;
@@ -201,7 +231,7 @@
       height: 19px;
       border-radius: 50%;
       background: #ffffff;
-      border: 3px solid #38bdf8;
+      border: 3px solid var(--timeline-color);
       box-shadow: 0 0 0 5px rgba(56,189,248,.2);
     }
 
@@ -210,7 +240,7 @@
       height: 19px;
       border-radius: 50%;
       background: #ffffff;
-      border: 3px solid #38bdf8;
+      border: 3px solid var(--timeline-color);
       box-shadow: 0 0 0 5px rgba(56,189,248,.2);
     }
 
@@ -223,7 +253,7 @@
     @media (max-width: 640px) {
       #timeline {
         width: calc(100vw - 24px);
-        bottom: 12px;
+        width: calc(100dvw - 24px);
         padding: 10px 12px 12px;
       }
 
@@ -231,13 +261,20 @@
         font-size: 12px;
       }
 
+      #fitLabel {
+        display: none;
+      }
+
       #flash {
-        bottom: 84px;
+        bottom: max(84px, calc(env(safe-area-inset-bottom) + 84px));
+        max-width: calc(100vw - 24px);
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       #counter {
-        right: 12px;
-        bottom: 10px;
+        right: max(12px, env(safe-area-inset-right));
+        bottom: max(10px, env(safe-area-inset-bottom));
       }
     }
   </style>
@@ -248,58 +285,46 @@
     <canvas id="canvas"></canvas>
   </div>
 
-  <div id="prevZone" class="zone"></div>
-  <div id="nextZone" class="zone"></div>
+  <div id="prevZone" class="zone" aria-label="Página anterior"></div>
+  <div id="nextZone" class="zone" aria-label="Próxima página"></div>
 
   <div id="loading">Carregando PDF...</div>
 
   <div id="error">
     Não consegui carregar o PDF.<br>
-    Coloque o arquivo <strong>apresentacao.pdf</strong> na mesma pasta do HTML<br>
-    e abra pelo <strong>localhost</strong>, não pelo file://.
+    Se der CORS, hospede o HTML e o PDF no mesmo domínio ou use arquivo local via localhost.
   </div>
 
   <div id="bottomHoverArea"></div>
 
   <div id="timeline">
     <div id="timelineInfo">
-      Slide <span id="pageNow">1</span> de <span id="pageTotal">?</span>
+      <span>Slide <span id="pageNow">1</span> de <span id="pageTotal">?</span></span>
+      <span id="fitLabel">modo: ajustar</span>
     </div>
 
-    <input id="timelineRange" type="range" min="1" max="1" value="1">
+    <input id="timelineRange" type="range" min="1" max="1" value="1" aria-label="Linha do tempo dos slides">
   </div>
 
   <div id="counter">
     <span id="counterNow">1</span>/<span id="counterTotal">?</span>
   </div>
 
-  <div id="flash">F = tela cheia · ← → = navegar · arraste a timeline</div>
+  <div id="flash">F = tela cheia · C = cobrir/ajustar · ← → = navegar</div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
   <script>
-    /*
-      Coloque o PDF na mesma pasta do HTML com este nome:
-
-      /home/felipe/penguiwhisper/
-      ├── test.html
-      └── apresentacao.pdf
-
-      Depois rode:
-      python3 -m http.server 8080
-
-      E acesse:
-      http://localhost:8080/test.html
-    */
-
     const PDF_URL = "https://rullerdev.github.io/romantismo.pdf";
 
     /*
-      cover   = cobre a tela inteira, pode cortar um pouco as bordas
-      contain = mostra o slide inteiro, pode sobrar fundo preto
-    */
+      contain = responsivo sem cortar slide
+      cover   = cobre a tela inteira e pode cortar bordas
 
-    const FIT_MODE = "cover";
+      O padrão agora é contain para NÃO cortar.
+      Aperte C para alternar entre ajustar e cobrir.
+    */
+    let fitMode = "contain";
 
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
@@ -318,21 +343,30 @@
 
     const timelineRange = document.getElementById("timelineRange");
     const flash = document.getElementById("flash");
+    const fitLabel = document.getElementById("fitLabel");
 
     let pdf = null;
     let currentPage = 1;
     let rendering = false;
     let pendingPage = null;
+    let activeRenderTask = null;
+
+    function viewportSize() {
+      const visual = window.visualViewport;
+      return {
+        width: Math.max(1, Math.floor(visual ? visual.width : window.innerWidth)),
+        height: Math.max(1, Math.floor(visual ? visual.height : window.innerHeight))
+      };
+    }
 
     function getScale(viewport) {
-      const scaleX = window.innerWidth / viewport.width;
-      const scaleY = window.innerHeight / viewport.height;
+      const size = viewportSize();
+      const scaleX = size.width / viewport.width;
+      const scaleY = size.height / viewport.height;
 
-      if (FIT_MODE === "cover") {
-        return Math.max(scaleX, scaleY);
-      }
-
-      return Math.min(scaleX, scaleY);
+      return fitMode === "cover"
+        ? Math.max(scaleX, scaleY)
+        : Math.min(scaleX, scaleY);
     }
 
     function updateUi(num) {
@@ -344,6 +378,8 @@
 
       timelineRange.max = pdf.numPages;
       timelineRange.value = num;
+
+      fitLabel.textContent = fitMode === "cover" ? "modo: cobrir" : "modo: ajustar";
 
       const progress =
         pdf.numPages <= 1
@@ -358,36 +394,47 @@
 
       rendering = true;
 
-      const page = await pdf.getPage(num);
-      const baseViewport = page.getViewport({ scale: 1 });
-      const scale = getScale(baseViewport);
-      const viewport = page.getViewport({ scale });
+      try {
+        if (activeRenderTask) {
+          activeRenderTask.cancel();
+          activeRenderTask = null;
+        }
 
-      const ratio = window.devicePixelRatio || 1;
+        const page = await pdf.getPage(num);
+        const baseViewport = page.getViewport({ scale: 1 });
+        const scale = getScale(baseViewport);
+        const viewport = page.getViewport({ scale });
+        const ratio = window.devicePixelRatio || 1;
 
-      canvas.width = Math.floor(viewport.width * ratio);
-      canvas.height = Math.floor(viewport.height * ratio);
+        canvas.width = Math.floor(viewport.width * ratio);
+        canvas.height = Math.floor(viewport.height * ratio);
+        canvas.style.width = `${Math.floor(viewport.width)}px`;
+        canvas.style.height = `${Math.floor(viewport.height)}px`;
 
-      canvas.style.width = `${viewport.width}px`;
-      canvas.style.height = `${viewport.height}px`;
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        ctx.clearRect(0, 0, viewport.width, viewport.height);
 
-      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      ctx.clearRect(0, 0, viewport.width, viewport.height);
+        activeRenderTask = page.render({
+          canvasContext: ctx,
+          viewport
+        });
 
-      await page.render({
-        canvasContext: ctx,
-        viewport
-      }).promise;
+        await activeRenderTask.promise;
+        activeRenderTask = null;
 
-      updateUi(num);
+        updateUi(num);
+        loading.style.display = "none";
+      } catch (err) {
+        if (err && err.name === "RenderingCancelledException") return;
+        console.error(err);
+      } finally {
+        rendering = false;
 
-      loading.style.display = "none";
-      rendering = false;
-
-      if (pendingPage !== null) {
-        const next = pendingPage;
-        pendingPage = null;
-        renderPage(next);
+        if (pendingPage !== null) {
+          const next = pendingPage;
+          pendingPage = null;
+          renderPage(next);
+        }
       }
     }
 
@@ -401,23 +448,19 @@
 
     function nextPage() {
       if (!pdf || currentPage >= pdf.numPages) return;
-
       currentPage++;
       queueRender(currentPage);
     }
 
     function prevPage() {
       if (!pdf || currentPage <= 1) return;
-
       currentPage--;
       queueRender(currentPage);
     }
 
     function goToPage(num) {
       if (!pdf) return;
-
       const target = Math.min(Math.max(Number(num), 1), pdf.numPages);
-
       currentPage = target;
       queueRender(currentPage);
     }
@@ -430,14 +473,22 @@
       }
     }
 
-    function showFlash() {
+    function toggleFitMode() {
+      fitMode = fitMode === "contain" ? "cover" : "contain";
+      queueRender(currentPage);
+      showFlash(fitMode === "cover" ? "Modo cobrir: pode cortar bordas" : "Modo ajustar: sem cortar slide");
+    }
+
+    function showFlash(text) {
+      flash.textContent = text || "F = tela cheia · C = cobrir/ajustar · ← → = navegar";
       flash.style.opacity = "1";
+      document.body.classList.add("show-ui");
 
       clearTimeout(window.__flashTimer);
-
       window.__flashTimer = setTimeout(() => {
         flash.style.opacity = "0";
-      }, 1700);
+        document.body.classList.remove("show-ui");
+      }, 1800);
     }
 
     document.getElementById("prevZone").onclick = prevPage;
@@ -463,6 +514,11 @@
         toggleFullscreen();
       }
 
+      if (e.key.toLowerCase() === "c") {
+        e.preventDefault();
+        toggleFitMode();
+      }
+
       if (e.key.toLowerCase() === "h") {
         e.preventDefault();
         showFlash();
@@ -479,22 +535,22 @@
       }
     });
 
-    window.addEventListener("resize", () => {
+    function scheduleResponsiveRender() {
       if (!pdf) return;
-
       clearTimeout(window.__resizeTimer);
-
       window.__resizeTimer = setTimeout(() => {
         queueRender(currentPage);
       }, 120);
-    });
+    }
+
+    window.addEventListener("resize", scheduleResponsiveRender);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", scheduleResponsiveRender);
+    }
 
     document.addEventListener("fullscreenchange", () => {
       if (!pdf) return;
-
-      setTimeout(() => {
-        queueRender(currentPage);
-      }, 120);
+      setTimeout(() => queueRender(currentPage), 120);
     });
 
     pdfjsLib.getDocument(PDF_URL).promise
@@ -508,11 +564,10 @@
         counterTotal.textContent = doc.numPages;
 
         renderPage(currentPage);
-        showFlash();
+        showFlash("Modo ajustar ativado: slide inteiro sem cortar");
       })
       .catch((err) => {
         console.error(err);
-
         loading.style.display = "none";
         errorBox.style.display = "grid";
         canvas.style.display = "none";
