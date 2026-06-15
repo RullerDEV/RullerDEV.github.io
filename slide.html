@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>PDF Presenter</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #050505;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      user-select: none;
+    }
+
+    #stage {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background: #050505;
+    }
+
+    canvas {
+      display: block;
+      background: white;
+    }
+
+    #loading {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: grid;
+      place-items: center;
+      color: rgba(255,255,255,.68);
+      font-size: 14px;
+      background: #050505;
+    }
+
+    #error {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: none;
+      place-items: center;
+      text-align: center;
+      color: white;
+      padding: 30px;
+      line-height: 1.5;
+      background: #050505;
+    }
+
+    .zone {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 50vw;
+      z-index: 5;
+    }
+
+    #prevZone {
+      left: 0;
+    }
+
+    #nextZone {
+      right: 0;
+    }
+
+    #counter {
+      position: fixed;
+      right: 16px;
+      bottom: 14px;
+      z-index: 55;
+
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(0, 0, 0, 0.38);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 650;
+
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity .18s ease, transform .18s ease;
+      pointer-events: none;
+    }
+
+    body:hover #counter {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #flash {
+      position: fixed;
+      left: 50%;
+      bottom: 92px;
+      transform: translateX(-50%);
+      z-index: 60;
+      color: rgba(255,255,255,.75);
+      background: rgba(0,0,0,.36);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease;
+    }
+
+    #bottomHoverArea {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 115px;
+      z-index: 40;
+    }
+
+    #timeline {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%) translateY(18px);
+      width: min(760px, calc(100vw - 36px));
+      z-index: 70;
+
+      padding: 12px 14px 14px;
+      border-radius: 18px;
+
+      background: rgba(8, 10, 14, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    #bottomHoverArea:hover + #timeline,
+    #timeline:hover {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #bottomHoverArea:hover ~ #counter,
+    #timeline:hover ~ #counter {
+      opacity: 0;
+    }
+
+    #timelineInfo {
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 13px;
+      font-weight: 650;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    #timelineRange {
+      width: 100%;
+      height: 8px;
+      margin: 0;
+      appearance: none;
+      -webkit-appearance: none;
+      background: linear-gradient(
+        to right,
+        #38bdf8 0%,
+        #38bdf8 var(--progress, 0%),
+        rgba(255,255,255,.25) var(--progress, 0%),
+        rgba(255,255,255,.25) 100%
+      );
+      border-radius: 999px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    #timelineRange::-webkit-slider-thumb {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #38bdf8;
+      box-shadow: 0 0 0 5px rgba(56,189,248,.2);
+    }
+
+    #timelineRange::-moz-range-thumb {
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #38bdf8;
+      box-shadow: 0 0 0 5px rgba(56,189,248,.2);
+    }
+
+    #timelineRange::-moz-range-track {
+      height: 8px;
+      border-radius: 999px;
+      background: transparent;
+    }
+
+    @media (max-width: 640px) {
+      #timeline {
+        width: calc(100vw - 24px);
+        bottom: 12px;
+        padding: 10px 12px 12px;
+      }
+
+      #timelineInfo {
+        font-size: 12px;
+      }
+
+      #flash {
+        bottom: 84px;
+      }
+
+      #counter {
+        right: 12px;
+        bottom: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="stage">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <div id="prevZone" class="zone"></div>
+  <div id="nextZone" class="zone"></div>
+
+  <div id="loading">Carregando PDF...</div>
+
+  <div id="error">
+    Não consegui carregar o PDF.<br>
+    Coloque o arquivo <strong>apresentacao.pdf</strong> na mesma pasta do HTML<br>
+    e abra pelo <strong>localhost</strong>, não pelo file://.
+  </div>
+
+  <div id="bottomHoverArea"></div>
+
+  <div id="timeline">
+    <div id="timelineInfo">
+      Slide <span id="pageNow">1</span> de <span id="pageTotal">?</span>
+    </div>
+
+    <input id="timelineRange" type="range" min="1" max="1" value="1">
+  </div>
+
+  <div id="counter">
+    <span id="counterNow">1</span>/<span id="counterTotal">?</span>
+  </div>
+
+  <div id="flash">F = tela cheia · ← → = navegar · arraste a timeline</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <script>
+    /*
+      Coloque o PDF na mesma pasta do HTML com este nome:
+
+      /home/felipe/penguiwhisper/
+      ├── test.html
+      └── apresentacao.pdf
+
+      Depois rode:
+      python3 -m http.server 8080
+
+      E acesse:
+      http://localhost:8080/test.html
+    */
+
+    const PDF_URL = "https://rullerdev.github.io/romantismo.pdf";
+
+    /*
+      cover   = cobre a tela inteira, pode cortar um pouco as bordas
+      contain = mostra o slide inteiro, pode sobrar fundo preto
+    */
+
+    const FIT_MODE = "cover";
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const loading = document.getElementById("loading");
+    const errorBox = document.getElementById("error");
+
+    const pageNow = document.getElementById("pageNow");
+    const pageTotal = document.getElementById("pageTotal");
+
+    const counterNow = document.getElementById("counterNow");
+    const counterTotal = document.getElementById("counterTotal");
+
+    const timelineRange = document.getElementById("timelineRange");
+    const flash = document.getElementById("flash");
+
+    let pdf = null;
+    let currentPage = 1;
+    let rendering = false;
+    let pendingPage = null;
+
+    function getScale(viewport) {
+      const scaleX = window.innerWidth / viewport.width;
+      const scaleY = window.innerHeight / viewport.height;
+
+      if (FIT_MODE === "cover") {
+        return Math.max(scaleX, scaleY);
+      }
+
+      return Math.min(scaleX, scaleY);
+    }
+
+    function updateUi(num) {
+      pageNow.textContent = num;
+      pageTotal.textContent = pdf.numPages;
+
+      counterNow.textContent = num;
+      counterTotal.textContent = pdf.numPages;
+
+      timelineRange.max = pdf.numPages;
+      timelineRange.value = num;
+
+      const progress =
+        pdf.numPages <= 1
+          ? 100
+          : ((num - 1) / (pdf.numPages - 1)) * 100;
+
+      timelineRange.style.setProperty("--progress", `${progress}%`);
+    }
+
+    async function renderPage(num) {
+      if (!pdf) return;
+
+      rendering = true;
+
+      const page = await pdf.getPage(num);
+      const baseViewport = page.getViewport({ scale: 1 });
+      const scale = getScale(baseViewport);
+      const viewport = page.getViewport({ scale });
+
+      const ratio = window.devicePixelRatio || 1;
+
+      canvas.width = Math.floor(viewport.width * ratio);
+      canvas.height = Math.floor(viewport.height * ratio);
+
+      canvas.style.width = `${viewport.width}px`;
+      canvas.style.height = `${viewport.height}px`;
+
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      ctx.clearRect(0, 0, viewport.width, viewport.height);
+
+      await page.render({
+        canvasContext: ctx,
+        viewport
+      }).promise;
+
+      updateUi(num);
+
+      loading.style.display = "none";
+      rendering = false;
+
+      if (pendingPage !== null) {
+        const next = pendingPage;
+        pendingPage = null;
+        renderPage(next);
+      }
+    }
+
+    function queueRender(num) {
+      if (rendering) {
+        pendingPage = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    function nextPage() {
+      if (!pdf || currentPage >= pdf.numPages) return;
+
+      currentPage++;
+      queueRender(currentPage);
+    }
+
+    function prevPage() {
+      if (!pdf || currentPage <= 1) return;
+
+      currentPage--;
+      queueRender(currentPage);
+    }
+
+    function goToPage(num) {
+      if (!pdf) return;
+
+      const target = Math.min(Math.max(Number(num), 1), pdf.numPages);
+
+      currentPage = target;
+      queueRender(currentPage);
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    function showFlash() {
+      flash.style.opacity = "1";
+
+      clearTimeout(window.__flashTimer);
+
+      window.__flashTimer = setTimeout(() => {
+        flash.style.opacity = "0";
+      }, 1700);
+    }
+
+    document.getElementById("prevZone").onclick = prevPage;
+    document.getElementById("nextZone").onclick = nextPage;
+
+    timelineRange.addEventListener("input", () => {
+      goToPage(timelineRange.value);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
+        e.preventDefault();
+        nextPage();
+      }
+
+      if (e.key === "ArrowLeft" || e.key === "PageUp") {
+        e.preventDefault();
+        prevPage();
+      }
+
+      if (e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+
+      if (e.key.toLowerCase() === "h") {
+        e.preventDefault();
+        showFlash();
+      }
+
+      if (e.key === "Home") {
+        e.preventDefault();
+        goToPage(1);
+      }
+
+      if (e.key === "End" && pdf) {
+        e.preventDefault();
+        goToPage(pdf.numPages);
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (!pdf) return;
+
+      clearTimeout(window.__resizeTimer);
+
+      window.__resizeTimer = setTimeout(() => {
+        queueRender(currentPage);
+      }, 120);
+    });
+
+    document.addEventListener("fullscreenchange", () => {
+      if (!pdf) return;
+
+      setTimeout(() => {
+        queueRender(currentPage);
+      }, 120);
+    });
+
+    pdfjsLib.getDocument(PDF_URL).promise
+      .then((doc) => {
+        pdf = doc;
+
+        timelineRange.max = doc.numPages;
+        timelineRange.value = currentPage;
+
+        pageTotal.textContent = doc.numPages;
+        counterTotal.textContent = doc.numPages;
+
+        renderPage(currentPage);
+        showFlash();
+      })
+      .catch((err) => {
+        console.error(err);
+
+        loading.style.display = "none";
+        errorBox.style.display = "grid";
+        canvas.style.display = "none";
+      });
+  </script>
+</body>
+</html>
